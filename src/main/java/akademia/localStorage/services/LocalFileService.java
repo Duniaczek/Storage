@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,9 +27,12 @@ import static akademia.configs.Constans.*;
 public class LocalFileService {
 
     private static Logger logger = Logger.getLogger(LocalFileService.class.getName());
+    private ServletContext context;
 
-    public LocalFileService() {
+    public LocalFileService(ServletContext servletContext) {
+        this.context = servletContext;
         creatDirectory();
+        creatContextAppDirectory();
     }
 
     public void creatDirectory() {
@@ -44,6 +48,16 @@ public class LocalFileService {
             }
         } else {
             logger.log(Level.INFO, "Directory: " + LOCAL_FILE_PATH + " already exist! ");
+        }
+    }
+
+    public void creatContextAppDirectory() {
+        CONTEXT_FILE_PATH = context.getRealPath("/uplouds/");
+        try {
+            Files.createDirectories(Paths.get(CONTEXT_FILE_PATH));
+            logger.log(Level.INFO, Paths.get(CONTEXT_FILE_PATH).toUri().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
